@@ -42,18 +42,17 @@ global lol
 global start_clicked
 global standard_start_button
 player_turn = randint(0, 1)
-print(player_turn)
 new_board = []
 board = []
-global counter
-counter = 0
 
+#Clear screen widgets
 def clear_screen():
     itemlist = ui.winfo_children()
     for l in itemlist:
         l.destroy()
 
 
+#Ask user if they want to Quits the game
 def quitgame(event):
     quitbox = messagebox.askquestion("Exit", "Are you sure you would like to exit?")
     if quitbox == "yes":
@@ -62,14 +61,14 @@ def quitgame(event):
     else:
         return
 
-
+#Starts the threading for the backdrop
 class startloop(Thread):
     def __init__(self, ui, backdrop_label):
         self.ui = ui
         self.backdrop_label = backdrop_label
         backdrploop(backdrop_label)
 
-
+#The loop of images for the backdrop
 def backdrploop(backdrop_label):
     loop = True
     while loop:
@@ -90,7 +89,7 @@ def backdrploop(backdrop_label):
         backdrop_label.config(image=backdrop2)
         sleep(0.2)
 
-
+#This function was never used but still have future plans to have it work
 def button_change():
     global standard_start_button
     standard_start_button.place_forget()
@@ -100,7 +99,7 @@ def button_change():
     sleep(0.5)
     singleplayer_multiplayer()
 
-
+# singleplayer or mulitplayer
 def singleplayer_multiplayer():
     def multiplayer():
         second_player = True
@@ -121,8 +120,8 @@ def singleplayer_multiplayer():
     singleplayer_button.place(x="120", y="100")
     multiplayer_button.place(x="300", y="100")
 
+#Starts the game
 def start_game(second_player):
-
 
     clear_screen()
     backdrop_label = Label(ui, image=backdrop)
@@ -132,9 +131,20 @@ def start_game(second_player):
     quitbutton = Button(ui, text="QUIT", command=lambda: quitgame(0))
     quitbutton.place(x=1, y=550, width=50, height=50)
 
+    #Clear Screen and reset variables
+    def reset():
+        clear_screen()
+        global player_turn
+        global new_board
+        global board
+        player_turn = randint(0, 1)
+        new_board = []
+        board = []
+        singleplayer_multiplayer()
+    # The player won
     def party(g):
         global z
-        play_again = Button(ui, text="Play Again?", font=("Impact", 15))
+        play_again = Button(ui, text="Play Again?", font=("Impact", 15), command=reset)
         if g == 1:
             for button in board:
                 button["state"] = "disabled"
@@ -154,6 +164,7 @@ def start_game(second_player):
             tie_game = Label(ui, text="Tie Game!", Font=("Impact", 30))
             tie_game.place(x="50", y="100")
 
+    #Win game function checks win condition
     def wingame(z, i, a):
         v = len(board)
         e = math.sqrt(v)
@@ -222,7 +233,7 @@ def start_game(second_player):
             else:
                 pass
 
-
+    #When Player olays the game
     def play(second_player, board,z, i, y, messagelabel):
         global player_turn
         if player_turn == 0:
@@ -256,16 +267,13 @@ def start_game(second_player):
             board[i - 1]["state"] = "disabled"
             wingame(z, i, "O")
             player_turn = 0
-
+    #Create the board
     def create_board(x):
         create_board_label.place_forget()
-
         board_size3.place_forget()
         board_size5.place_forget()
         board_size7.place_forget()
         board_size9.place_forget()
-
-
         global board
         global player_turn
         messagelabel = Label(ui)
@@ -279,11 +287,8 @@ def start_game(second_player):
             else:
                 messagelabel.config(text="Player 2's turn")
 
-
         width = ui.winfo_screenwidth()
-        height = ui.winfo_screenheight()
         y_axis = width * 0.5 / 4.5
-        print(y_axis)
         y = x ** 2
         z = x ** 2 + 1
 
@@ -296,19 +301,10 @@ def start_game(second_player):
         elif x == 9:
             x_axis = 125
 
-        xlist = []
-        xlista = []
 
         for i in range(1, z):
             x_axis = x_axis + 35
             board.append(Button(ui, text=i, width=3, command=lambda i=i: play(second_player, board,z, i, y, messagelabel)))
-
-            #for button in board:
-                #button["state"] == "disabled"
-            # board[i]["text"] = "X"
-            # board[i]["state"] = "disabled"
-            # play(second_player, i, board_x_axis, board_y_axis
-            xlist.append(x_axis)
             board[(i-1)].place(x=x_axis, y=y_axis)
             print(x_axis)
             if len(board) % x == 0:
@@ -332,11 +328,8 @@ def start_game(second_player):
                         x_axis = 125
                     y_axis = y_axis + 15
 
-
-
     create_board_label = Label(ui, text="Select Board Size")
     create_board_label.place(x="225", y="100")
-
     board_size3 = Button(ui, text="3x3", command=lambda: create_board(3))
     board_size5 = Button(ui, text="5x5", command=lambda: create_board(5))
     board_size7 = Button(ui, text="7x7", command=lambda: create_board(7))
@@ -355,9 +348,6 @@ def start_game(second_player):
 
 # - This command sets the button as activated, as if the button was being highlighted by the user.
 # button["state"] == "active"
-
-
-
 
 image1 = Image.open("Images/Intro.png")
 lol = PhotoImage(file="Images/lol.png")
@@ -379,7 +369,7 @@ backdrop5 = PhotoImage(file="Images/Backdrop5.png")
 
 
 
-
+#Photo Image
 start_clicked = PhotoImage(file="Images/ButtonClick.png")
 intro = ImageTk.PhotoImage(image1)
 intro_label = Label(ui, image=intro)
@@ -399,6 +389,5 @@ intro_header2 = Label(ui, text="TIC - TAC - TOE", fg="red", font=("Impact", 40))
 intro_header1.place(x="225", y="160")
 intro_header2.place(x="160", y="220")
 ui.bind("<Escape>", quitgame)
-
 
 ui.mainloop()
